@@ -50,30 +50,38 @@ public class NaoServiceImpl implements NaoService {
         String[] args = new String[0];
 
         //2- Starts the application where we configure the next robot behavior
-        Application application = new Application(args, this.robotUrl);
+        try {
+            Application application = new Application(args, this.robotUrl);
 
-        //3- Sets the text the robot should say
-        ALTextToSpeech tts = new ALTextToSpeech(application.session());
-        tts.say(bmle.getSpeech().getText());
+            //3- Sets the text the robot should say
+            ALTextToSpeech tts = new ALTextToSpeech(application.session());
+            tts.say(bmle.getSpeech().getText());
 
-        //4- Sets the facial leds, getting the eyes group and setting for each led
-        ALLeds leds = new ALLeds(application.session());
-        Arrays.stream(Constants.EYES).forEach(led -> {
-            try {
-                //TODO: Set the number of seconds of the fade
-                leds.fadeRGB(led, bmle.getFace().getLexeme(), Float.valueOf("2"));
-            } catch (CallError | InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        });
+            //TODO: Review the tone = the volume
+            tts.setParameter("speed", Float.valueOf(bmle.getSpeech().getSpeed()));
+            tts.setVolume(Float.valueOf(bmle.getSpeech().getTone()));
 
-        //5- Sets the posture
-        ALRobotPosture posture = new ALRobotPosture(application.session());
-        //TODO: Set the max speed fraction
-        posture.goToPosture(bmle.getPosture().getLexeme(), Float.valueOf("0.5"));
+            //4- Sets the facial leds, getting the eyes group and setting for each led
+            ALLeds leds = new ALLeds(application.session());
+            Arrays.stream(Constants.EYES).forEach(led -> {
+                try {
+                    //TODO: Set the number of seconds of the fade
+                    leds.fadeRGB(led, bmle.getFace().getLexeme(), Float.valueOf("2"));
+                } catch (CallError | InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            });
 
-        //Launches the actions
-        application.run();
+            //5- Sets the posture
+            ALRobotPosture posture = new ALRobotPosture(application.session());
+            //TODO: Set the max speed fraction
+            posture.goToPosture(bmle.getPosture().getLexeme(), Float.valueOf("0.5"));
+
+            //Launches the actions
+            application.run();
+        }catch (Exception e){
+            System.out.println("Error: " + e.getMessage());
+        }
 
     }
 }
