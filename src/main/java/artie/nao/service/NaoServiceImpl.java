@@ -79,11 +79,7 @@ public class NaoServiceImpl implements NaoService {
 
             //6- Checks if we need to listen to the student
             if (!bmle.getSpeech().getEnd()){
-                //ALDialog dialog = new ALDialog(application.session());
-                //dialog.tell("param");
-                List<String> vocabulary = new ArrayList<>();
-                vocabulary.add("Si");
-                vocabulary.add("No");
+                List<String> vocabulary = new ArrayList<>(Arrays.asList("Si", "No"));
 
                 ALSpeechRecognition speechRecognition = new ALSpeechRecognition(application.session());
                 speechRecognition.setLanguage("Spanish");
