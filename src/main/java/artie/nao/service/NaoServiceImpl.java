@@ -4,9 +4,7 @@ import artie.generator.dto.bmle.BML;
 import artie.nao.config.Constants;
 import com.aldebaran.qi.Application;
 import com.aldebaran.qi.CallError;
-import com.aldebaran.qi.helper.proxies.ALLeds;
-import com.aldebaran.qi.helper.proxies.ALRobotPosture;
-import com.aldebaran.qi.helper.proxies.ALTextToSpeech;
+import com.aldebaran.qi.helper.proxies.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -15,7 +13,9 @@ import jakarta.xml.bind.JAXBException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 @Service
 public class NaoServiceImpl implements NaoService {
@@ -76,6 +76,19 @@ public class NaoServiceImpl implements NaoService {
             ALRobotPosture posture = new ALRobotPosture(application.session());
             //TODO: Set the max speed fraction
             posture.goToPosture(bmle.getPosture().getLexeme(), Float.valueOf("0.5"));
+
+            //6- Checks if we need to listen to the student
+            if (!bmle.getSpeech().getEnd()){
+                //ALDialog dialog = new ALDialog(application.session());
+                //dialog.tell("param");
+                List<String> vocabulary = new ArrayList<>();
+                vocabulary.add("Si");
+                vocabulary.add("No");
+
+                ALSpeechRecognition speechRecognition = new ALSpeechRecognition(application.session());
+                speechRecognition.setLanguage("Spanish");
+                speechRecognition.setVocabulary(vocabulary, false);
+            }
 
             //Launches the actions
             application.run();
